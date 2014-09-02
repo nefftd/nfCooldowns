@@ -1,0 +1,12 @@
+## Interface: 50400
+
+## Title: nfCooldowns
+## Notes: Neffi's cooldowns.
+## Author: Neffi
+## Version: 0 (DEV)
+
+libs\nfAddon.lua
+
+ui.lua
+blacklist.lua
+core.lua
