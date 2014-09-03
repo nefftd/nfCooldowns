@@ -21,6 +21,11 @@
 
 
 -- Common
+  local MIN_TRACK_DUR = 2  -- Minimum cooldown duration that should be tracked.
+  local GCD_SPID = 61304   -- Spell ID of the global cooldown.
+
+
+-- Common
   local active = {}
   local order = {}
   
@@ -143,14 +148,16 @@
   local function SPELL_UPDATE_COOLDOWN()  -- USES SPELLNAME AS ID
     local changed = false
     
+    local _,gcd_duration = GetSpellCooldown(GCD_SPID)
+    
     local spname,spicon,splink,start,duration,_
     for i = 1,#care_spells do
       spname = care_spells[i]
       start,duration = GetSpellCooldown(spname)
-      if start > 0 and duration > 1 then
+      if start > 0 and duration > gcd_duration then
         if active[spname] then
           update(spname,start,duration)
-        elseif duration > 2 then
+        elseif duration > MIN_TRACK_DUR then
           _,_,spicon = GetSpellInfo(spname)
           splink = GetSpellLink(spname)
           new(spname,spicon,splink,false,start,duration)
@@ -177,14 +184,16 @@
   local function PET_BAR_UPDATE_COOLDOWN()  -- USES SPELLNAME AS ID
     local changed = false
     
+    local _,gcd_duration = GetSpellCooldown(GCD_SPID)
+    
     local spname,spicon,splink,start,duration,_
     for i = 1,#care_petspells do
       spname = care_petspells[i]
       start,duration = GetSpellCooldown(spname)
-      if start > 0 and duration > 1 then
+      if start > 0 and duration > gcd_duration then
         if active[spname] then
           update(spname,start,duration)
-        elseif duration > 2 then
+        elseif duration > MIN_TRACK_DUR then
           _,_,spicon = GetSpellInfo(spname)
           splink = GetSpellLink(spname)
           new(spname,spicon,splink,false,start,duration)
@@ -208,14 +217,16 @@
   local function BAG_UPDATE_COOLDOWN()  -- USES ITEMID AS ID
     local changed = false
     
+    local _,gcd_duration = GetSpellCooldown(GCD_SPID)
+    
     local itemid,itemicon,itemlink,start,duration,_
     for i = 1,#care_items do
       itemid = care_items[i]
       start,duration = GetItemCooldown(itemid)
-      if start > 0 and duration > 1 then
+      if start > 0 and duration > gcd_duration then
         if active[itemid] then
           update(itemid,start,duration)
-        elseif duration > 2 then
+        elseif duration > MIN_TRACK_DUR then
           itemicon = GetItemIcon(itemid)
           _,itemlink = GetItemInfo(itemid)
           new(itemid,itemicon,itemlink,false,start,duration)
@@ -239,14 +250,16 @@
   local function INVENTORY_UPDATE_COOLDOWN()  -- USES ITEMID AS ID
     local changed = false
     
+    local _,gcd_duration = GetSpellCooldown(GCD_SPID)
+    
     local itemid,itemicon,itemlink,start,duration,_
     for i = 1,#care_inventory do
       itemid = care_inventory[i]
       start,duration = GetItemCooldown(itemid)
-      if start > 0 and duration > 1 then
+      if start > 0 and duration > gcd_duration then
         if active[itemid] then
           update(itemid,start,duration)
-        elseif duration > 2 then
+        elseif duration > MIN_TRACK_DUR then
           itemicon = GetItemIcon(itemid)
           _,itemlink = GetItemInfo(itemid)
           new(itemid,itemicon,itemlink,false,start,duration)
