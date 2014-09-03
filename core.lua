@@ -4,6 +4,11 @@
   local _,mod = ...
 
 
+-- Constants
+  local MIN_TRACK_DUR = 2  -- Minimum cooldown duration that should be tracked.
+  local GCD_SPID = 61304   -- Spell ID of the global cooldown.
+
+
 -- Import stuff from ui.lua
   local newbutton = mod.newbutton
     mod.newbutton = nil
@@ -18,11 +23,6 @@
   
   local blacklist = mod.blacklist or {}
     mod.blacklist = nil
-
-
--- Common
-  local MIN_TRACK_DUR = 2  -- Minimum cooldown duration that should be tracked.
-  local GCD_SPID = 61304   -- Spell ID of the global cooldown.
 
 
 -- Common
