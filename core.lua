@@ -9,7 +9,7 @@
     mod.newbutton = nil
   
   if not newbutton then
-    self:print('Function mod.newbutton() @ ui.lua not found. Aborting.')
+    mod:print('Function mod.newbutton() @ ui.lua not found. Aborting.')
     return
   end
   
