@@ -1,17 +1,11 @@
 
 
 -- Todo: hoist into tweakable constants: anchor, spacing, grow direction, row
--- size, pulse anchor, pulse size, pulse fadeout time.
+-- size, bar location (top, left, etc).
 
 
 -- Namespace
   local _,mod = ...
-
-
--- Custom class colors
-  local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
-  local _,enclass = UnitClass('player')
-  local cc = RAID_CLASS_COLORS[enclass]
 
 
 -- Style & config constants
@@ -20,14 +14,26 @@
   local use_classcolor = true
   local dim_classcolor = 0.8  -- Dim the color by this amount (1.0 = not dimmed)
   
-  local icon_size = 16
-  local bar_width = 2
+  local icon_size  = 16
+  local bar_width  = 2
+  local pulse_size = 22
   
   local font_time = {mod.path..'\\media\\bavaria.ttf',8,'OUTLINE_MONOCHROME'}
   
   local color_bar    = {.52,.20,.20}  -- Overriden by use_classcolor
   local color_border = {.07,.07,.07}
   local color_barbg  = {.30,.30,.30}
+  
+  local pulse_anchor = {'CENTER',UIParent,'CENTER',0,-140}
+  
+  local pulse_holdtime = 0.8  -- Time in seconds the pulse holds before fadeout
+  local pulse_fadetime = 0.2  -- Time in seconds it takes the pulse to fadeout
+
+
+-- Custom class colors
+  local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
+  local _,enclass = UnitClass('player')
+  local cc = RAID_CLASS_COLORS[enclass]
 
 
 -- Update events
@@ -146,9 +152,9 @@
   -- itself afterwards.
   
   local pulse = CreateFrame('Frame',nil,UIParent)
-    pulse:SetHeight(24) pulse:SetWidth(24)
+    pulse:SetHeight(pulse_size+2) pulse:SetWidth(pulse_size+2)
     pulse:SetFrameLevel(3)
-    pulse:SetPoint('CENTER',0,-140)
+    pulse:SetPoint(unpack(pulse_anchor))
     pulse:Hide()
     mod.pulse = pulse
   
@@ -164,11 +170,8 @@
   
   pulse:SetScript('OnUpdate',function(self,elapsed)
     self.elapsed = self.elapsed + elapsed
-    local perc = self.elapsed / 1
-    if perc >= 1 then
-      self:Hide()
-    elseif perc > 0.8 then
-      self:SetAlpha(1-((perc-0.8)*5))
+    if self.elapsed > pulse_holdtime then
+      self:SetAlpha(1 - ((self.elapsed - pulse_holdtime) / pulse_fadeout))
     end
   end)
   
