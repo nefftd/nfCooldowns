@@ -1,5 +1,9 @@
 
 
+-- Todo: hoist into tweakable constants: anchor, spacing, grow direction, row
+-- size, pulse anchor, pulse size, pulse fadeout time.
+
+
 -- Namespace
   local _,mod = ...
 
@@ -10,15 +14,20 @@
   local cc = RAID_CLASS_COLORS[enclass]
 
 
--- Style constants
-  local size = 16
+-- Style & config constants
+  local desaturate_pet = true
+  
+  local use_classcolor = true
+  local dim_classcolor = 0.8  -- Dim the color by this amount (1.0 = not dimmed)
+  
+  local icon_size = 16
   local bar_width = 2
   
-  local f_time = {mod.path..'\\media\\bavaria.ttf',8,'OUTLINE_MONOCHROME'}
+  local font_time = {mod.path..'\\media\\bavaria.ttf',8,'OUTLINE_MONOCHROME'}
   
-  local c_bar = (cc and {cc.r*0.8,cc.g*0.8,cc.b*0.8} or {.52,.20,.20})
-  local c_barbg  = {.30,.30,.30}
-  local c_border = {.07,.07,.07}
+  local color_bar    = {.52,.20,.20}  -- Overriden by use_classcolor
+  local color_border = {.07,.07,.07}
+  local color_barbg  = {.30,.30,.30}
 
 
 -- Update events
@@ -27,12 +36,18 @@
   -- :update_time(duration,left)
   -- :update_order(position)
   
+  -- `hyperlink` is a full hyperlink as returned by GetSpellLink or GetItemInfo.
+  -- That is, it includes the full ID, name, color, etc. It's sufficient for
+  -- printing to the chat, or extracting additional information.
+  
   local btnAPI = {}
   
-  function btnAPI:update_info(link,icon,ispet)
-    self.hyperlink = link
+  function btnAPI:update_info(hyperlink,icon,ispet)
+    self.hyperlink = hyperlink
     self.icon:SetTexture(icon)
-    self.icon:SetDesaturated(ispet)
+    if desaturate_pet then
+      self.icon:SetDesaturated(ispet)
+    end
   end
   
   function btnAPI:update_time(duration,left)
@@ -73,37 +88,43 @@
   
   function mod.newbutton()
     local btn = CreateFrame('Frame',nil,UIParent)
-      btn:SetHeight(size+2) btn:SetWidth(size+bar_width+3)
+      btn:SetHeight(icon_size+2) btn:SetWidth(icon_size+bar_width+3)
       btn:EnableMouse(true)
       btn:SetScript('OnEnter',btn_OnEnter)
       btn:SetScript('OnLeave',btn_OnLeave)
     
     local bg = btn:CreateTexture(nil,'BACKGROUND')
       bg:SetAllPoints(true)
-      bg:SetTexture(unpack(c_border))
+      bg:SetTexture(unpack(color_border))
       btn.bg = bg
     
     local icon = btn:CreateTexture(nil,'ARTWORK')
-      icon:SetHeight(size) icon:SetWidth(size)
+      icon:SetHeight(icon_size) icon:SetWidth(icon_size)
       icon:SetPoint('LEFT',1,0)
       icon:SetTexCoord(.1,.9,.1,.9)
       btn.icon = icon
     
     local timebar = btn:CreateTexture(nil,'ARTWORK')
-      timebar:SetHeight(size) timebar:SetWidth(bar_width)
+      timebar:SetHeight(icon_size) timebar:SetWidth(bar_width)
       timebar:SetPoint('BOTTOMRIGHT',-1,1)
-      timebar:SetTexture(unpack(c_bar))
+      if use_classcolor and cc then
+        local r,g,b = cc.r,cc.g,cc.b
+        r,g,b = r*dim_classcolor,g*dim_classcolor,b*dim_classcolor
+        timebar:SetTexture(r,g,b)
+      else
+        timebar:SetTexture(unpack(color_bar))
+      end
       btn.timebar = timebar
     
     local timebarbg = btn:CreateTexture(nil,'BORDER')
-      timebarbg:SetHeight(size) timebarbg:SetWidth(bar_width)
+      timebarbg:SetHeight(icon_size) timebarbg:SetWidth(bar_width)
       timebarbg:SetPoint('BOTTOMRIGHT',-1,1)
-      timebarbg:SetTexture(unpack(c_barbg))
+      timebarbg:SetTexture(unpack(color_barbg))
       btn.timebarbg = timebarbg
     
     local timetext = btn:CreateFontString(nil,'OVERLAY')
       timetext:SetPoint('BOTTOMLEFT',-2,-2)
-      timetext:SetFont(unpack(f_time))
+      timetext:SetFont(unpack(font_time))
       timetext:SetJustifyH('LEFT')
       btn.timetext = timetext
     
@@ -138,7 +159,7 @@
   
   local border = pulse:CreateTexture(nil,'BACKGROUND')
     border:SetAllPoints(true)
-    border:SetTexture(unpack(c_border))
+    border:SetTexture(unpack(color_border))
     pulse.border = border
   
   pulse:SetScript('OnUpdate',function(self,elapsed)
@@ -153,7 +174,9 @@
   
   function pulse:update_show(icon,ispet)
     self.icon:SetTexture(icon)
-    self.icon:SetDesaturated(ispet)
+    if desaturate_pet then
+      self.icon:SetDesaturated(ispet)
+    end
     self:SetAlpha(1)
     self.elapsed = 0
     self:Show()

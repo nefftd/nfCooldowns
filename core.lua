@@ -29,9 +29,9 @@
   local active = {}
   local order = {}
   
-  local care_spells =    { --[[spellname]] }
+  local care_spells    = { --[[spellname]] }
   local care_petspells = { --[[spellname]] }
-  local care_items =     { --[[itemid]] }
+  local care_items     = { --[[itemid]] }
   local care_inventory = { --[[itemid]] }
   
   local check_pendulum
@@ -44,6 +44,9 @@
     local btn = table.remove(recycle) or newbutton()
     
     btn:Show()
+    -- Properties stored in the button by core may change with versions. Do not
+    -- use them in ui.lua. Store them on your own if you need them. Fields
+    -- beginning with a single underscore are reserved.
     btn._start = start
     btn._duration = duration
     btn._id = id
