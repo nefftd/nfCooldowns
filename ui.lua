@@ -58,7 +58,7 @@
   
   function btnAPI:update_time(duration,left)
     if left < 0 then left = 0 end
-    self.timebar:SetHeight((left/duration)*size)
+    self.timebar:SetHeight((left/duration)*icon_size)
     self.timetext:SetText(
       left >= 60 and '' or
       left >= 10 and ('%d')  :format(left) or
@@ -171,7 +171,7 @@
   pulse:SetScript('OnUpdate',function(self,elapsed)
     self.elapsed = self.elapsed + elapsed
     if self.elapsed > pulse_holdtime then
-      self:SetAlpha(1 - ((self.elapsed - pulse_holdtime) / pulse_fadeout))
+      self:SetAlpha(1 - ((self.elapsed - pulse_holdtime) / pulse_fadetime))
     end
   end)
   
