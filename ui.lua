@@ -78,11 +78,6 @@
 
 
 -- Button construct
-  -- The core expects this function to exist. It should create a full frame
-  -- representing the cooldown button and return it. This is the object that the
-  -- above methods get fired upon. It will be hidden/shown at need. The position
-  -- is expected to be managed manually via :update_order(position).
-  
   local function btn_OnEnter(self)
     GameTooltip:SetOwner(self,'ANCHOR_CURSOR')
     GameTooltip:SetHyperlink(self.hyperlink)
@@ -92,6 +87,10 @@
     GameTooltip:Hide()
   end
   
+  -- The core expects this function to exist. It should create a full frame
+  -- representing the cooldown button and return it. This is the object that the
+  -- above methods get fired upon. It will be hidden/shown at need. The position
+  -- is expected to be managed manually via :update_order(position).
   function mod.newbutton()
     local btn = CreateFrame('Frame',nil,UIParent)
       btn:SetHeight(icon_size+2) btn:SetWidth(icon_size+bar_width+3)

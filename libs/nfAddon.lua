@@ -20,6 +20,10 @@
       end
     end
     
+    -- Note: Will not (and can not) capture the name of the invoking function
+    -- if it is a tail call. This information is not available in the traceback.
+    -- It will instead name the function '?'.
+    
     function mod:argcheck(val,argn,...)
       if not checktypelist(type(val),...) then
         local name = debugstack(2,1,0):match("in function `([^']+)'") or '?'
